@@ -3,6 +3,7 @@ package by.minsk.softeq.kunitski.servise;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.Map;
+import java.util.Objects;
 import java.util.stream.Collectors;
 
 public final class Sorter {
@@ -14,10 +15,12 @@ public final class Sorter {
      * @return map with top 10 pages, sorted by total hits
      */
     public static HashMap<String, HashMap<String, Integer>> sortPagesByTotalHits(HashMap<String, HashMap<String, Integer>> allStatsMap) {
-        return allStatsMap.entrySet().stream()
+        return Objects.nonNull(allStatsMap)
+                ? allStatsMap.entrySet().stream()
                 .sorted((first, second) -> second.getValue().get(Statistic.TOTAL).compareTo(first.getValue().get(Statistic.TOTAL)))
                 .limit(TOP_PAGES_NUMBER)
-                .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue, (e1, e2) -> e1, LinkedHashMap::new));
+                .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue, (e1, e2) -> e1, LinkedHashMap::new))
+                : null;
     }
 
 }

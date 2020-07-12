@@ -1,6 +1,5 @@
 package by.minsk.softeq.kunitski.servise;
 
-import by.minsk.softeq.kunitski.exception.StopRecursiveMethodException;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
@@ -13,27 +12,22 @@ import java.util.HashSet;
 import java.util.Objects;
 import java.util.regex.Pattern;
 
-public class LinkParser {
+public class Parser {
     private Logger logger = LoggerFactory.getLogger(this.getClass());
     private HashSet<String> links;
     private int pageCounter = 0;
-    private static final int LIMIT_PAGES = 100;
+    private static final int LIMIT_PAGES = 10_000;
     private static final int MAX_DEPTH = 8;
     private final static Pattern EXCLUSIONS = Pattern.compile(".*(\\.(css|js|xml|gif|jpg|png|mp3|mp4|zip|gz|pdf))$");
 
 
-    public LinkParser() {
+    public Parser() {
         links = new HashSet<>();
     }
 
-    public void parse(String url, int depth) throws StopRecursiveMethodException {
+    public void parse(String url, int depth) {
 
-        // the fastest way to quit out of recursive method
-        if (pageCounter >= LIMIT_PAGES) {
-            throw new StopRecursiveMethodException("Limit of pages was reached");
-        }
-
-        if (shouldVisit(url) && depth < MAX_DEPTH) {
+        if (depth < MAX_DEPTH && shouldVisit(url)) {
 
             links.add(url);
 
@@ -52,18 +46,22 @@ public class LinkParser {
                     pageCounter++;
 
                     for (Element link : linksOnPage) {
+                        if (pageCounter >= LIMIT_PAGES) {
+                            break;
+                        }
                         String innerUrl = link.attr("abs:href");
                         parse(innerUrl, depth);
                     }
                 }
             } catch (IOException e) {
+                logger.error("something went wrong with URL - {}", url);
                 logger.error(e.getMessage(), e);
             }
         }
     }
 
     public boolean shouldVisit(String url) {
-        return !EXCLUSIONS.matcher(url).matches() && !links.contains(url) && !url.isEmpty();
+        return !url.isEmpty() && !links.contains(url) && url.startsWith("https://") && !EXCLUSIONS.matcher(url).matches();
     }
 
 }
