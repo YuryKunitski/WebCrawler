@@ -11,13 +11,15 @@ import org.slf4j.LoggerFactory;
 import java.io.IOException;
 import java.util.HashSet;
 import java.util.Objects;
+import java.util.regex.Pattern;
 
 public class LinkParser {
+    private Logger logger = LoggerFactory.getLogger(this.getClass());
     private HashSet<String> links;
     private int pageCounter = 0;
-    private static final int LIMIT_PAGES = 10;
-    private static final int MAX_DEPTH = 2;
-    private Logger logger = LoggerFactory.getLogger(this.getClass());
+    private static final int LIMIT_PAGES = 100;
+    private static final int MAX_DEPTH = 8;
+    private final static Pattern EXCLUSIONS = Pattern.compile(".*(\\.(css|js|xml|gif|jpg|png|mp3|mp4|zip|gz|pdf))$");
 
 
     public LinkParser() {
@@ -31,18 +33,20 @@ public class LinkParser {
             throw new StopRecursiveMethodException("Limit of pages was reached");
         }
 
-        if (!links.contains(url) && depth < MAX_DEPTH && !url.isEmpty()) {
+        if (shouldVisit(url) && depth < MAX_DEPTH) {
 
             links.add(url);
 
             try {
                 Document document = Jsoup.connect(url).get();   //need to handle
                 Elements linksOnPage = document.select("a[href]");
-                Element body = document.body();
+                Element pageBody = document.body();
 
-                if (Objects.nonNull(body)) {
-                    String pageText = body.text();
-                    TermStatistic.collectStats(pageText, url);
+                if (Objects.nonNull(pageBody)) {
+
+                    String pageText = pageBody.text();
+                    Statistic statistic = new Statistic();
+                    statistic.collectStats(pageText, url);
 
                     depth++;
                     pageCounter++;
@@ -56,6 +60,10 @@ public class LinkParser {
                 logger.error(e.getMessage(), e);
             }
         }
+    }
+
+    public boolean shouldVisit(String url) {
+        return !EXCLUSIONS.matcher(url).matches() && !links.contains(url) && !url.isEmpty();
     }
 
 }

@@ -13,6 +13,10 @@ public class CsvWriter {
     private static final String CSV_SEPARATOR = ",";
     private static Logger logger = LoggerFactory.getLogger(CsvWriter.class);
 
+    /**
+     * @param allStatsMap map with all web crawler stats
+     * @param fileName which will be created or updated if it is already exists
+     */
     public static void writeToFile(HashMap<String, HashMap<String, Integer>> allStatsMap, String fileName) {
         try (BufferedWriter bw = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(fileName), StandardCharsets.UTF_8))) {
             for (Map.Entry<String, HashMap<String, Integer>> crawlerStatSet : allStatsMap.entrySet()) {
@@ -36,8 +40,6 @@ public class CsvWriter {
                 bw.write(statsBuilder.toString());
                 bw.newLine();
             }
-        } catch (UnsupportedEncodingException | FileNotFoundException e) {
-            logger.error(e.getMessage(), e);
         } catch (IOException e) {
             logger.error(e.getMessage(), e);
         }
