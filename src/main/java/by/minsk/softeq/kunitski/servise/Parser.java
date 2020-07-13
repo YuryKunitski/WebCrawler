@@ -60,7 +60,7 @@ public class Parser {
         }
     }
 
-    public boolean shouldVisit(String url) {
+    private boolean shouldVisit(String url) {
         return !url.isEmpty() && !links.contains(url) && url.startsWith("https://") && !EXCLUSIONS.matcher(url).matches();
     }
 
