@@ -26,7 +26,7 @@ public class Statistic {
     public void collectStats(String pageText, String url) {
         if (shouldCollect(pageText, url)) {
             for (Term term : ALL_TERMS) {
-                int allTermCountCoincidences = countTermCoincidences(term, pageText);
+                int allTermCountCoincidences = countTermMatches(term, pageText);
                 termStats.put(term.toString(), allTermCountCoincidences);
             }
             addTotalHits();
@@ -47,7 +47,7 @@ public class Statistic {
      * @param text in which the term will be searched
      * @return the number of matches of the term found in the text
      */
-    private int countTermCoincidences(Term term, String text) {
+    private int countTermMatches(Term term, String text) {
         int count = 0;
         Pattern p = Pattern.compile(term.toString(), Pattern.UNICODE_CASE | Pattern.CASE_INSENSITIVE);
         Matcher m = p.matcher(text);

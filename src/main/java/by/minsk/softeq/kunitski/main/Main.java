@@ -12,8 +12,8 @@ import java.util.HashMap;
 public class Main {
     private static Logger logger = LoggerFactory.getLogger(Main.class);
     private static String SEED_URL = "https://en.wikipedia.org/wiki/Elon_Musk";
-    private static String ALL_STAT_FILE_NAME = "WebCrawlerAllStats.csv";
-    private static String SORTED_STAT_FILE_NAME = "WebCrawlerSortedStats.csv";
+    private static final String ALL_STAT_FILE_NAME = "WebCrawlerAllStats.csv";
+    private static final String SORTED_STAT_FILE_NAME = "WebCrawlerSortedStats.csv";
 
     public static void main(String[] args) {
         long start = System.currentTimeMillis();
@@ -31,6 +31,6 @@ public class Main {
         CsvWriter.writeToFile(sortedStats, SORTED_STAT_FILE_NAME);
 
         long finish = System.currentTimeMillis();
-        logger.info("Working time  - {}", finish - start);
+        logger.info("Working time  - {} milliseconds", finish - start);
     }
 }
