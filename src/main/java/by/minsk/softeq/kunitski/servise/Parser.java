@@ -16,8 +16,8 @@ public class Parser {
     private Logger logger = LoggerFactory.getLogger(this.getClass());
     private HashSet<String> links;
     private int pageCounter = 0;
-    private static final int LIMIT_PAGES = 100;
-    private static final int MAX_DEPTH = 2;
+    private static final int LIMIT_PAGES = 10_000;
+    private static final int MAX_DEPTH = 8;
     private final static Pattern EXCLUSIONS = Pattern.compile(".*(\\.(css|js|xml|gif|jpg|png|mp3|mp4|zip|gz|pdf))$");
 
 
