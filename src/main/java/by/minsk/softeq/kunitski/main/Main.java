@@ -8,6 +8,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.util.HashMap;
+import java.util.Objects;
 
 public class Main {
     private static Logger logger = LoggerFactory.getLogger(Main.class);
@@ -20,15 +21,15 @@ public class Main {
 
         Parser parser = new Parser();
         parser.parse(SEED_URL, 0);
-
-
+        
         HashMap<String, HashMap<String, Integer>> allStats = Statistic.getAllStats();
-        HashMap<String, HashMap<String, Integer>> sortedStats = Sorter.sortPagesByTotalHits(allStats);
-
-        sortedStats.forEach((key, value) -> logger.info("url = {}, Numbers are {}", key, value));
-
         CsvWriter.writeToFile(allStats, ALL_STAT_FILE_NAME);
-        CsvWriter.writeToFile(sortedStats, SORTED_STAT_FILE_NAME);
+
+        HashMap<String, HashMap<String, Integer>> sortedStats = Sorter.sortPagesByTotalHits(allStats);
+        if (Objects.nonNull(sortedStats)) {
+            sortedStats.forEach((key, value) -> logger.info("url = {}, Numbers are {}", key, value));
+            CsvWriter.writeToFile(sortedStats, SORTED_STAT_FILE_NAME);
+        }
 
         long finish = System.currentTimeMillis();
         logger.info("Working time  - {} milliseconds", finish - start);
